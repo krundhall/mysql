@@ -1,7 +1,13 @@
-### Mock Exam 2
+# MySQL Cheatsheet
+- https://quickref.me/mysql.html
+- https://www.mysqltutorial.org/mysql-cheat-sheet/
+- https://devhints.io/mysql
+
+
+### Answers from a LLM remixed mock exam
 
 ```sql
--- Kevin Grundhall PAGPT25h
+-- Kevin Grundhall kegr25 PAGPT25h
 
 -- 1.
 CREATE TABLE IF NOT EXISTS Guest(
