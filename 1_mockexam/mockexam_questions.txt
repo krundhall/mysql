@@ -1,0 +1,144 @@
+===============================================================
+  GymTrack / HotelStay Mock Test — Practice Questions
+===============================================================
+
+PASS REQUIREMENT: 4/9 correct, Q5 or Q9 must be included.
+
+---------------------------------------------------------------
+SCENARIO: HotelStay Room Booking System (HotelSBS)
+---------------------------------------------------------------
+
+Tables:
+  Guest     — guestID, Fname, Lname, Age, Phone, Email, Country
+  Room      — roomID, roomType, pricePerNight, floorNum, availableSlots
+  Booking   — bookingID, roomID, guestID, checkIn, numOfNights,
+               checkOut (NULL if not yet checked out)
+
+Assumption: Each room has a maximum of 3 active bookings (availableSlots).
+
+---------------------------------------------------------------
+Q1 — Create Tables & Insert Data
+---------------------------------------------------------------
+Create the three tables with appropriate data types, primary keys,
+and foreign keys. Insert the provided sample data.
+
+Guest:
+  G001, Karl,  Persson, 33, 070-111, karl@mail.com,  Sweden
+  G002, Nina,  Koch,    29, 070-222, nina@mail.com,  Germany
+  G003, Tom,   Walsh,   41, 070-333, tom@mail.com,   Ireland
+  G004, Sara,  Ali,     27, 070-444, sara@mail.com,  Sweden
+  G005, Leo,   Marin,   35, 070-555, leo@mail.com,   Spain
+
+Room:
+  R01, Single, 800,  1, 3
+  R02, Double, 1200, 2, 3
+  R03, Suite,  2500, 4, 2
+  R04, Single, 800,  1, 3
+  R05, Double, 1200, 3, 3
+
+Booking (bookingID, roomID, guestID, checkIn, numOfNights, checkOut):
+  1,  R01, G001, 2024-03-01, 3, 2024-03-04
+  2,  R02, G002, 2024-03-05, 2, 2024-03-07
+  3,  R03, G003, 2024-04-10, 5, 2024-04-15
+  4,  R01, G004, 2024-05-01, 7, NULL
+  5,  R02, G001, 2024-05-03, 4, NULL
+  6,  R03, G002, 2024-05-10, 2, NULL
+  7,  R04, G003, 2024-05-12, 3, NULL
+  8,  R05, G005, 2024-04-20, 6, 2024-04-26
+  9,  R01, G002, 2024-06-01, 2, NULL
+  10, R05, G004, 2024-06-05, 3, NULL
+
+-- Extra row for testing Q9:
+  11, R04, G005, 2024-03-01, 2, 2024-03-05
+
+---------------------------------------------------------------
+Q2 — SELECT (No Bookings)
+---------------------------------------------------------------
+Write a SELECT that shows all guests who have never made a booking.
+Columns: guestID | Fname | Lname | numOfBookings (= 0)
+
+---------------------------------------------------------------
+Q3 — SELECT with Aggregation
+---------------------------------------------------------------
+Write a SELECT that shows each room and its average actual stay
+duration in nights. Only count completed bookings (checkOut IS NOT NULL).
+Columns: roomID | roomType | AverageNights
+
+---------------------------------------------------------------
+Q4 — View
+---------------------------------------------------------------
+Create a view called CurrentGuests showing all guests currently
+staying (checkOut IS NULL).
+Columns: bookingID | Fname | Lname | roomID | roomType | ExpectedCheckOut
+ExpectedCheckOut = checkIn + numOfNights (use DATE_ADD)
+
+---------------------------------------------------------------
+Q5 — Trigger ⭐
+---------------------------------------------------------------
+Create a trigger on the Booking table that fires AFTER UPDATE.
+When checkOut changes from NULL to a date (guest checks out),
+increase the room's availableSlots by 1 in the Room table.
+Test with an UPDATE and verify availableSlots changed.
+
+---------------------------------------------------------------
+Q6 — Procedure
+---------------------------------------------------------------
+Create a procedure called MakeBooking that handles a new booking.
+Inputs: roomID, guestID, checkIn, numOfNights
+
+- If availableSlots = 0:
+    do NOT insert, print "Booking failed! Room is fully booked."
+- If available:
+    insert the booking, decrement availableSlots by 1,
+    print "Booking confirmed!"
+
+Call it at least twice to demonstrate both outcomes.
+
+---------------------------------------------------------------
+Q7 — Advanced SELECT I
+---------------------------------------------------------------
+Show ALL guests and every booking they have made.
+Guests with no bookings must still appear.
+Columns: guestID | name_ (Fname + ' ' + Lname) | bookingID | roomID
+Order by bookingID DESC.
+
+---------------------------------------------------------------
+Q8 — Advanced SELECT II
+---------------------------------------------------------------
+Show all guests currently staying (checkOut IS NULL).
+Columns: guestName (Fname + ' ' + Lname) | roomType | ExpectedCheckOut
+
+---------------------------------------------------------------
+Q9 — Function I ⭐
+---------------------------------------------------------------
+The hotel charges 200 SEK per extra night when a guest stays longer
+than originally booked.
+
+Write a function GetOverstayFee(bookingID) that returns the fee,
+or 0 if no overstay or not yet checked out.
+
+Then write a SELECT using the function showing only guests who owe
+a fee. Columns:
+  bookingID | Fname | Lname | extraNights | totalFee
+
+Only show rows where totalFee > 0.
+Hint: extraNights = DATEDIFF(checkOut, checkIn) - numOfNights
+
+---------------------------------------------------------------
+Q10 — Function II
+---------------------------------------------------------------
+Create a function GetBookingCount(roomID) that returns the total
+number of times a room has been booked.
+
+Plug it into a SELECT showing ALL rooms ordered by booking count
+descending. Rooms with zero bookings must still appear.
+Columns: roomID | roomType | numOfBookings
+
+===============================================================
+  Useful Links
+===============================================================
+  Quick reference:   https://quickref.me/mysql.html
+  Full reference:    https://www.mysqltutorial.org/mysql-cheat-sheet/
+  Printable PDF:     https://devhints.io/mysql
+  Brad Traversy:     https://gist.github.com/bradtraversy/c831baaad44343cc945e76c2e30927b3
+===============================================================
